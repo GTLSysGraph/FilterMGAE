@@ -1,0 +1,6 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+all_data_attack_diff_split/
+all_data_synthetic/
+dir*
+test.py
