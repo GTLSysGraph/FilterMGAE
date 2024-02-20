@@ -12,10 +12,14 @@ import torch
 import torch.nn as nn
 from torch import optim as optim
 from tensorboardX import SummaryWriter
-
+import psutil
 
 
 logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO)
+
+def show_occupied_memory():
+    process = psutil.Process(os.getpid())
+    return process.memory_info().rss / 1024**2
 
 
 def accuracy(y_pred, y_true):

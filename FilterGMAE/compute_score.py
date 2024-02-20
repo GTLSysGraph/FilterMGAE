@@ -15,6 +15,11 @@ def compute_score(graph, mask_type, dataset_name, dis_lambda=1.0, mix_type=None,
         graph.ndata['csim_score'] = (graph.ndata['csim_score'] / graph.in_degrees().unsqueeze(-1)).squeeze()
         # graph.ndata['csim_score'] = 1 / (1 +  torch.exp(graph.ndata['csim'])) # cim越大权重越小，希望在混合权重的时候可以靠后
         graph.ndata['final_score'] = graph.ndata['csim_score']
+
+        ## 额外的分析评估，sorted score分数
+        # print(sum(graph.ndata['final_score'][graph.ndata['train_mask'].nonzero().squeeze()]))
+        # quit()
+
     elif mask_type == 'dis':
         ######### part 2 distribution score            get graph.ndata['dis_score']
         # 首先给定一个部分识别标志
@@ -61,6 +66,7 @@ def compute_score(graph, mask_type, dataset_name, dis_lambda=1.0, mix_type=None,
             # graph.ndata['certifyk_score'] = 1 / (1 +  torch.exp(certifyk))
             graph.ndata['certifyk_score'] = certifyk
             graph.ndata['final_score'] = graph.ndata['certifyk_score']
+
     elif mask_type == 'mix':
         print(mix_type.split('-'))
         ######### part 5 mix score                    get graph.ndata['mix_score'] 
@@ -87,9 +93,9 @@ def compute_score(graph, mask_type, dataset_name, dis_lambda=1.0, mix_type=None,
 
 def feat_filter(graph):
     ######### part 5 low signal and high signal    get graph.ndata['low_signal'] & graph.ndata['high_signal']
-    low_signal, high_signal    = calculate(to_scipy(graph.adj().to_dense()), graph.ndata['feat'])
-    graph.ndata['low_signal']  = torch.tensor(low_signal).float()
-    graph.ndata['high_signal'] = torch.tensor(high_signal).float()
+    low_signal, high_signal    = calculate(to_scipy(graph.adj().to_dense()), graph.ndata['feat'].cuda())
+    graph.ndata['low_signal']  = low_signal.float()
+    graph.ndata['high_signal'] = high_signal.float()
     return
 
 def normalize_score(tensor):

@@ -1,0 +1,22 @@
+Preparing dataset
+attack type: PRBCD | ptb_rate: 0.5
+[I] Loading dataset Attack-ogbn-arxiv...
+train_mask, test_mask, val_mask sizes : tensor(90941) tensor(29799) tensor(48603)
+[I] Finished loading.
+[I] Data load time: 3.1476s
+------ Use best configs ------
+{'seeds': [1], 'device': -1, 'max_epoch': 1000, 'warmup_steps': -1, 'num_heads': 4, 'num_out_heads': 1, 'num_layers': 3, 'num_hidden': 512, 'residual': False, 'in_drop': 0.2, 'attn_drop': 0.1, 'norm': 'layernorm', 'lr': 0.001, 'weight_decay': 0.0, 'negative_slope': 0.2, 'activation': 'prelu', 'mask_rate': 0.5, 'drop_edge_rate': 0.5, 'replace_rate': 0.0, 'encoder': 'gat', 'decoder': 'gat', 'loss_fn': 'sce', 'alpha_l': 3, 'optimizer': 'adam', 'max_epoch_f': 600, 'lr_f': 0.01, 'weight_decay_f': 0.0005, 'linear_prob': True, 'load_model': False, 'save_model': False, 'use_cfg': True, 'logging': False, 'scheduler': True, 'concat_hidden': False, 'scheme': 'fix', 'use_feat_filter': False, 'use_low': True, 'mask_strategy': 'csim', 'dis_lambda ': 1.0, 'mix_type': 'degree-csim', 'w_degree': 0.8, 'w_dis': 0.2, 'w_csim': 0.2, 'w_certifyk': 0.2, 'keep_scope_centerline': 0.2, 'keep_scope_interval': 0.2, 'mask_scope_centerline': 0.9, 'mask_scope_interval': 0.1, 'keep_num_ratio': 0.9, 'mask_num_ratio': 0.9, 'pooling': 'mean', 'deg4feat': False, 'batch_size': 32, 'batch_size_f': 256, 'dis_lambda': 1.0}
+####### Run 1 for seed 1
+0
+67736
+135474
+169342
+# IGNORE: --- TestAcc: 0.5971, early-stopping-TestAcc: 0.5972, Best ValAcc: 0.5874 in epoch 596 --- 
+# IGNORE: --- TestAcc: 0.6048, early-stopping-TestAcc: 0.6047, Best ValAcc: 0.5935 in epoch 579 --- 
+# IGNORE: --- TestAcc: 0.6064, early-stopping-TestAcc: 0.6065, Best ValAcc: 0.5951 in epoch 403 --- 
+# IGNORE: --- TestAcc: 0.6078, early-stopping-TestAcc: 0.6076, Best ValAcc: 0.5973 in epoch 544 --- 
+# IGNORE: --- TestAcc: 0.6084, early-stopping-TestAcc: 0.6084, Best ValAcc: 0.5973 in epoch 570 --- 
+num parameters for finetuning: 20520
+--- TestAcc: 0.6082, early-stopping-TestAcc: 0.6083, Best ValAcc: 0.5974 in epoch 589 --- 
+# final_acc: 0.6082±0.0000
+# early-stopping_acc: 0.6083±0.0000

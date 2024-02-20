@@ -10,7 +10,7 @@ def node_classification_evaluation(model, graph, x, num_classes, lr_f, weight_de
     model.eval()
     if linear_prob:
         with torch.no_grad():
-            x = model.embed(graph.to(device), x.to(device))
+            x, _ = model.embed(graph.to(device), x.to(device))
             in_feat = x.shape[1]
         encoder = LogisticRegression(in_feat, num_classes)
     else:

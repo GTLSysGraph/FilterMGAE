@@ -19,9 +19,11 @@ from datasets_dgl.utils import to_scipy
 from datasets_dgl.utils_generate_synthetic import *
 from build_easydict import build_easydict
 
-from FilterGMAE.evaluation    import node_classification_evaluation
-from FilterGMAE.models        import build_model
-from FilterGMAE.compute_score import * 
+from FilterGMAE.evaluation                  import node_classification_evaluation
+from FilterGMAE.evaluation_mini_batch       import evaluete_mini_batch
+from FilterGMAE.models                      import build_model
+from FilterGMAE.compute_score               import * 
+from FilterGMAE.utils                       import show_occupied_memory
 
 import matplotlib.pyplot as plt
 
@@ -32,7 +34,60 @@ from FilterGMAE.compare_jaccard_svd import drop_dissimilar_edges,truncatedSVD
 
 
 
-def pretrain(model, graph, feat, optimizer, max_epoch, device, scheduler, num_classes, lr_f, weight_decay_f, max_epoch_f, linear_prob, logger=None):
+def pretrain_mini_batch(model, graph, feat, optimizer, batch_size, max_epoch, device, use_scheduler):
+    logging.info("start training GraphMAE mini batch node classification..")
+    x = feat.to(device)
+    # model = model.to(device)
+
+    # dataloader
+    sampler = dgl.dataloading.MultiLayerFullNeighborSampler(1)
+    dataloader = dgl.dataloading.DataLoader(
+            graph,torch.arange(0, graph.num_nodes()), sampler,
+            batch_size=batch_size,
+            shuffle=True,
+            drop_last=False,
+            num_workers=1)
+
+    logging.info(f"After creating dataloader: Memory: {show_occupied_memory():.2f} MB")
+    if use_scheduler and max_epoch > 0:
+        logging.info("Use scheduler")
+        scheduler = lambda epoch :( 1 + np.cos((epoch) * np.pi / max_epoch) ) * 0.5
+        scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=scheduler)
+    else:
+        scheduler = None
+
+    # train
+    for epoch in range(max_epoch):
+        epoch_iter = tqdm(dataloader)
+        loss_list = []
+        for input_nodes, output_nodes, _ in epoch_iter:
+            model.train()
+            subgraph = dgl.node_subgraph(graph, input_nodes).to(device)
+            # 只用加一两行行代码即可，根据我们的方案，得到input nodes的权重和低频高频特征，feat是已经处理好的特征
+            subgraph.ndata['final_score'] = graph.ndata['final_score'][input_nodes].to(device)
+            subgraph.ndata['feat']        = x[input_nodes]
+
+
+            subgraph = subgraph.to(device)
+            loss, loss_dict = model(subgraph, subgraph.ndata["feat"], mode='mini_batch')
+            optimizer.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 3)
+            optimizer.step()
+            epoch_iter.set_description(f"train_loss: {loss.item():.4f}, Memory: {show_occupied_memory():.2f} MB")
+            loss_list.append(loss.item())
+            
+        if scheduler is not None:
+            scheduler.step()
+
+        # torch.save(model.state_dict(), os.path.join(model_dir, model_name))
+        print(f"# Epoch {epoch} | train_loss: {np.mean(loss_list):.4f}, Memory: {show_occupied_memory():.2f} MB")
+    return model
+
+
+
+
+def pretrain_tranductive(model, graph, feat, optimizer, max_epoch, device, scheduler, num_classes, lr_f, weight_decay_f, max_epoch_f, linear_prob, logger=None):
     logging.info("start training..")
     graph = graph.to(device)
     x = feat.to(device)
@@ -41,20 +96,20 @@ def pretrain(model, graph, feat, optimizer, max_epoch, device, scheduler, num_cl
     # # Jaccard
     # modified_adj = drop_dissimilar_edges(x.cpu().numpy(), to_scipy(graph.adj().to_dense()), binary_feature=True, threshold=0.0)
     # svd
-    modified_adj = to_scipy(torch.tensor(truncatedSVD(to_scipy(graph.adj().to_dense()), k=50)))
-    weight = torch.tensor(modified_adj.data).to(device)
+    # modified_adj = to_scipy(torch.tensor(truncatedSVD(to_scipy(graph.adj().to_dense()), k=50)))
+    # weight = torch.tensor(modified_adj.data).to(device)
 
-    graph_pretrain = dgl.from_scipy(modified_adj)
-    graph_pretrain = dgl.remove_self_loop(graph_pretrain)
-    graph_pretrain = dgl.add_self_loop(graph_pretrain) 
-    graph_pretrain = graph_pretrain.to(device)
-    graph_pretrain.ndata['train_mask'] = graph.ndata['train_mask']
-    graph_pretrain.ndata['val_mask'] = graph.ndata['val_mask']
-    graph_pretrain.ndata['test_mask'] = graph.ndata['test_mask']
-    graph_pretrain.ndata['label']      = graph.ndata['label']
-    graph_pretrain.ndata['feat']      = graph.ndata['feat']
-    print(graph_pretrain)
-    print(graph)
+    # graph_pretrain = dgl.from_scipy(modified_adj)
+    # graph_pretrain = dgl.remove_self_loop(graph_pretrain)
+    # graph_pretrain = dgl.add_self_loop(graph_pretrain) 
+    # graph_pretrain = graph_pretrain.to(device)
+    # graph_pretrain.ndata['train_mask'] = graph.ndata['train_mask']
+    # graph_pretrain.ndata['val_mask'] = graph.ndata['val_mask']
+    # graph_pretrain.ndata['test_mask'] = graph.ndata['test_mask']
+    # graph_pretrain.ndata['label']      = graph.ndata['label']
+    # graph_pretrain.ndata['feat']      = graph.ndata['feat']
+    # print(graph_pretrain)
+    # print(graph)
 
 
     epoch_iter = tqdm(range(max_epoch))
@@ -63,8 +118,8 @@ def pretrain(model, graph, feat, optimizer, max_epoch, device, scheduler, num_cl
 
         # compare
         # loss, loss_dict = model(graph_pretrain, x)           # jaccard
-        loss, loss_dict = model(graph_pretrain, x, weight)   # svd
-        # loss, loss_dict = model(graph, x)                    # origin
+        # loss, loss_dict = model(graph_pretrain, x, weight)   # svd
+        loss, loss_dict = model(graph, x)                    # origin
 
         optimizer.zero_grad()
         loss.backward()
@@ -94,6 +149,7 @@ def pretrain(model, graph, feat, optimizer, max_epoch, device, scheduler, num_cl
     #     plt.savefig('./t-sne/cora_metattack_0.0.pdf')
 
     return model
+
 
 
 def Train_FilterMGAE_nodecls(margs):
@@ -129,7 +185,6 @@ def Train_FilterMGAE_nodecls(margs):
     graph = dgl.remove_self_loop(graph)
     graph = dgl.add_self_loop(graph) #在扰动大的情况下不加自环貌似更好
 
-
     MDT = build_easydict()
     param         = MDT['MODEL']['PARAM']
     if param.use_cfg:
@@ -157,6 +212,9 @@ def Train_FilterMGAE_nodecls(margs):
     save_model     = param.save_model
     logs           = param.logging
     use_scheduler  = param.scheduler
+    # mini batch
+    batch_size       = param.batch_size
+    batch_size_f     = param.batch_size_f
     # add by ssh
     use_feat_filter = param.use_feat_filter
     use_low         = param.use_low
@@ -236,7 +294,7 @@ def Train_FilterMGAE_nodecls(margs):
         else:
             logger = None
 
-        model = build_model(param)
+        model = build_model(param, margs.mode)
         model.to(device)
         optimizer = create_optimizer(optim_type, model, lr, weight_decay)
 
@@ -259,10 +317,13 @@ def Train_FilterMGAE_nodecls(margs):
             x = graph.ndata['feat']
         ############### add by ssh 
 
-  
         if not load_model:
-            model = pretrain(model, graph, x, optimizer, max_epoch, device, scheduler, num_classes, lr_f, weight_decay_f, max_epoch_f, linear_prob, logger)
+            if margs.mode == 'tranductive':
+                model = pretrain_tranductive(model, graph, x, optimizer, max_epoch, device, scheduler, num_classes, lr_f, weight_decay_f, max_epoch_f, linear_prob, logger)
+            elif margs.mode == 'mini_batch':
+                model = pretrain_mini_batch(model,  graph, x, optimizer, batch_size, max_epoch, device, use_scheduler)
             model = model.cpu()
+
 
         if load_model:
             logging.info("Loading Model ... ")
@@ -274,7 +335,12 @@ def Train_FilterMGAE_nodecls(margs):
         model = model.to(device)
         model.eval()
 
-        final_acc, estp_acc = node_classification_evaluation(model, graph, graph.ndata['feat'], num_classes, lr_f, weight_decay_f, max_epoch_f, device, linear_prob)
+        if margs.mode   == 'tranductive':
+            final_acc, estp_acc = node_classification_evaluation(model, graph, graph.ndata['feat'], num_classes, lr_f, weight_decay_f, max_epoch_f, device, linear_prob)
+        elif margs.mode == 'mini_batch':
+            final_acc = evaluete_mini_batch(model, graph, num_classes, lr_f, weight_decay_f, max_epoch_f, linear_prob, device, batch_size=batch_size_f, shuffle=True)
+            estp_acc  = final_acc
+
         acc_list.append(final_acc)
         estp_acc_list.append(estp_acc)
 
@@ -292,9 +358,11 @@ def Train_FilterMGAE_nodecls(margs):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset',        type=str,                   default= 'Cora') #['Cora', 'CiteSeer', 'PubMed', 'DBLP', 'WikiCS', 'Coauthor-CS', 'Coauthor-Phy','Amazon-Computers', 'Amazon-Photo', 'ogbn-arxiv','Reddit','Flickr','Yelp']
-    parser.add_argument('--attack',         type=str,                   default= 'no') # ['DICE-0.1','Meta_Self-0.05' ,...] 攻击方式-扰动率
-
+    parser.add_argument('--dataset',        type=str,                   default = 'Cora') #['Cora', 'CiteSeer', 'PubMed', 'DBLP', 'WikiCS', 'Coauthor-CS', 'Coauthor-Phy','Amazon-Computers', 'Amazon-Photo', 'ogbn-arxiv','Reddit','Flickr','Yelp']
+    parser.add_argument('--model_name',     type = str,                 default = 'FilterMGAE')
+    parser.add_argument('--task',           type = str,                 default = 'nodecls') # 'linkcls' 'graphcls'
+    parser.add_argument('--attack',         type=str,                   default = 'no') # ['DICE-0.1','Meta_Self-0.05' ,...] 攻击方式-扰动率
+    parser.add_argument('--mode',           type = str,                 default = 'tranductive') # inductive mini-batch
 
     # 同一攻击比例不同划分的图
     # parser.add_argument('--train_size',     type=float,                 default= 0.5,                                                                           help='train rate.')
@@ -305,4 +373,5 @@ if __name__ == '__main__':
 
 
     margs = parser.parse_args()
-    Train_FilterMGAE_nodecls(margs)
+    Train_func = 'Train_' + margs.model_name + '_' + margs.task
+    eval(Train_func)(margs)

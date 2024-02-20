@@ -1,7 +1,7 @@
 from .edcoder import PreModel
 
 
-def build_model(args):
+def build_model(args, mode):
     num_heads = args.num_heads
     num_out_heads = args.num_out_heads
     num_hidden = args.num_hidden
@@ -24,6 +24,7 @@ def build_model(args):
     num_features = args.num_features
 
     # add by ssh
+    mode                  = mode
     scheme                = args.scheme
     num_nodes             = args.num_nodes
     mask_strategy         = args.mask_strategy
@@ -55,6 +56,7 @@ def build_model(args):
         alpha_l=alpha_l,
         concat_hidden=concat_hidden,
         # add by ssh
+        mode                  = mode,
         scheme                = scheme,
         num_nodes             = num_nodes,
         mask_strategy         = mask_strategy,

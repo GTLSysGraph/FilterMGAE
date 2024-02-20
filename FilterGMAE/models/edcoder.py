@@ -115,6 +115,7 @@ class PreModel(nn.Module):
             alpha_l: float = 2,
             concat_hidden: bool = False,
             # add by ssh
+            mode                  : str   = 'tranductive',
             scheme                : str   = 'sample',
             num_nodes             : int   = 2485,
             mask_strategy         : str   = 'degree',
@@ -135,8 +136,6 @@ class PreModel(nn.Module):
         self._concat_hidden = concat_hidden
         self._replace_rate = replace_rate
         self._mask_token_rate = 1 - self._replace_rate
-
-
         # add by ssh
         self._scheme                = scheme
         self._mask_strategy         = mask_strategy
@@ -146,24 +145,24 @@ class PreModel(nn.Module):
         self._mask_scope_interval   = mask_scope_interval
         self._keep_num_ratio        = keep_num_ratio
         self._mask_num_ratio        = mask_num_ratio
-        self._keep_scope_centerline_index       = int(num_nodes * self._keep_scope_centerline)
-        self._keep_scope_len                    = int(num_nodes * self._keep_scope_interval) 
-        self._mask_scope_centerline_index       = int(num_nodes * self._mask_scope_centerline)
-        self._mask_scope_len                    = int(num_nodes * self._mask_scope_interval) 
-        self._keep_low  = self._keep_scope_centerline_index - self._keep_scope_len
-        self._keep_high = self._keep_scope_centerline_index + self._keep_scope_len
-        self._mask_low  = self._mask_scope_centerline_index - self._mask_scope_len
-        self._mask_high = self._mask_scope_centerline_index + self._mask_scope_len
-        print(self._keep_low)
-        print(self._keep_high)
-        print(self._mask_low)
-        print(self._mask_high)
-
-        assert  self._keep_low >= 0 
-        assert (self._keep_high >= self._keep_low) &  (self._keep_high <= self._mask_low)
-        assert (self._mask_high <= num_nodes)      &  (self._mask_high >= self._mask_low)
+        if mode == 'tranductive':
+            # add by ssh 全图的时候可以在init里面这样算，但是mini batch的时候这样就不行了,需要根据每个minibatch的g计算一下，这部分要放在forward里面
+            self._keep_scope_centerline_index       = int(num_nodes * self._keep_scope_centerline)
+            self._keep_scope_len                    = int(num_nodes * self._keep_scope_interval) 
+            self._mask_scope_centerline_index       = int(num_nodes * self._mask_scope_centerline)
+            self._mask_scope_len                    = int(num_nodes * self._mask_scope_interval) 
+            self._keep_low  = self._keep_scope_centerline_index - self._keep_scope_len
+            self._keep_high = self._keep_scope_centerline_index + self._keep_scope_len
+            self._mask_low  = self._mask_scope_centerline_index - self._mask_scope_len
+            self._mask_high = self._mask_scope_centerline_index + self._mask_scope_len
+            print(self._keep_low)
+            print(self._keep_high)
+            print(self._mask_low)
+            print(self._mask_high)
+            assert  self._keep_low >= 0 
+            assert (self._keep_high >= self._keep_low) &  (self._keep_high <= self._mask_low)
+            assert (self._mask_high <= num_nodes)      &  (self._mask_high >= self._mask_low)
         # add by ssh
-
 
         assert num_hidden % nhead == 0
         assert num_hidden % nhead_out == 0
@@ -299,9 +298,25 @@ class PreModel(nn.Module):
             raise NotImplementedError
         return criterion
     
-    def encoding_mask_noise(self, g, x, mask_rate=0.3):
+    def encoding_mask_noise(self, g, x, mask_rate, mode):
         num_nodes = g.num_nodes()
-        
+
+        # add by ssh # 如果是mini batch，需要根据每个subgraph算一下范围
+        if mode == 'mini_batch':
+            self._keep_scope_centerline_index       = int(num_nodes * self._keep_scope_centerline)
+            self._keep_scope_len                    = int(num_nodes * self._keep_scope_interval) 
+            self._mask_scope_centerline_index       = int(num_nodes * self._mask_scope_centerline)
+            self._mask_scope_len                    = int(num_nodes * self._mask_scope_interval) 
+            self._keep_low  = self._keep_scope_centerline_index - self._keep_scope_len
+            self._keep_high = self._keep_scope_centerline_index + self._keep_scope_len
+            self._mask_low  = self._mask_scope_centerline_index - self._mask_scope_len
+            self._mask_high = self._mask_scope_centerline_index + self._mask_scope_len
+            assert  self._keep_low >= 0 
+            assert (self._keep_high >= self._keep_low) &  (self._keep_high <= self._mask_low)
+            assert (self._mask_high <= num_nodes)      &  (self._mask_high >= self._mask_low)
+        # add by ssh
+
+
         ######## random masking
         if self._mask_strategy == 'random':
             num_mask_nodes = int(mask_rate * num_nodes)
@@ -464,14 +479,14 @@ class PreModel(nn.Module):
 
         return use_g, out_x, (mask_nodes, keep_nodes)
 
-    def forward(self, g, x, weight=None):
+    def forward(self, g, x, weight=None, mode='tranductive'):
         # ---- attribute reconstruction ----
-        loss = self.mask_attr_prediction(g, x, weight)
+        loss = self.mask_attr_prediction(g, x, weight, mode)
         loss_item = {"loss": loss.item()}
         return loss, loss_item
     
-    def mask_attr_prediction(self, g, x, weight):
-        pre_use_g, use_x, (mask_nodes, keep_nodes) = self.encoding_mask_noise(g, x, self._mask_rate)
+    def mask_attr_prediction(self, g, x, weight, mode):
+        pre_use_g, use_x, (mask_nodes, keep_nodes) = self.encoding_mask_noise(g, x, self._mask_rate, mode)
 
         if self._drop_edge_rate > 0:
             use_g, masked_edges = drop_edge(pre_use_g, self._drop_edge_rate, return_edges=True)
@@ -532,7 +547,7 @@ class PreModel(nn.Module):
 
 
     def embed(self, g, x):
-        rep = self.encoder(g, x)
+        rep = self.encoder(g, x, return_hidden=True)
         return rep
 
     @property

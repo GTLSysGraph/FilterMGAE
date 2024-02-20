@@ -1,5 +1,5 @@
 cora:
-  seeds: [1,2,3,4]
+  seeds: [2]
   lr: 0.001
   lr_f: 0.01
   num_hidden: 512
@@ -23,29 +23,53 @@ cora:
   replace_rate: 0.05 
   alpha_l: 3
   scheduler: True
+
   ##########################################################################
-  # 自己随便试           
-  scheme                 : 'sample'
-  use_feat_filter        : False
-  use_low                : True
+  # 随便试
+  # scheme                 : 'fix'
+  # use_feat_filter        : True
+  # use_low                : True
 
-  mask_strategy          : 'random'
-  dis_lambda             : 1.0                          # 'mask_strategy'== distribution
+  # mask_strategy          : 'random'
+  # dis_lambda             : 1.0                          # 'mask_strategy'== distribution
 
-  mix_type               : 'degree-csim'                 # 'mask_strategy'== mix
-  w_degree               : 0.6                           # 'mask_strategy'== mix
-  w_dis                  : 0.5                           # 'mask_strategy'== mix
-  w_csim                 : 0.4                           # 'mask_strategy'== mix
-  w_certifyk             : 0.1                           # 'mask_strategy'== mix
+  # mix_type               : 'degree-csim'                 # 'mask_strategy'== mix
+  # w_degree               : 0.9                           # 'mask_strategy'== mix
+  # w_dis                  : 0.5                           # 'mask_strategy'== mix
+  # w_csim                 : 0.1                           # 'mask_strategy'== mix
+  # w_certifyk             : 0.1                           # 'mask_strategy'== mix
 
-  keep_scope_centerline  : 0.3
-  keep_scope_interval    : 0.3 
-  mask_scope_centerline  : 0.8
-  mask_scope_interval    : 0.2
+  # keep_scope_centerline  : 0.25
+  # keep_scope_interval    : 0.25
+  # mask_scope_centerline  : 0.75
+  # mask_scope_interval    : 0.25
 
-  keep_num_ratio         : 0.5
-  mask_num_ratio         : 0.8
+  # keep_num_ratio         : 1.0
+  # mask_num_ratio         : 1.0   
 
+  ##########################################################################
+  ##########################################################################
+  # raw 0.8425±0.0017   貌似只能0.5比例才可以，不降低就行吧
+  # scheme                 : 'sample'
+  # use_feat_filter        : False
+  # use_low                : True
+
+  # mask_strategy          : 'mix'
+  # dis_lambda             : 1.0                           # 'mask_strategy'== distribution
+
+  # mix_type               : 'degree-csim'                 # 'mask_strategy'== mix
+  # w_degree               : 0.5                           # 'mask_strategy'== mix
+  # w_dis                  : 0.5                           # 'mask_strategy'== mix
+  # w_csim                 : 0.5                           # 'mask_strategy'== mix
+  # w_certifyk             : 0.1                           # 'mask_strategy'== mix
+
+  # keep_scope_centerline  : 0.25
+  # keep_scope_interval    : 0.25
+  # mask_scope_centerline  : 0.75
+  # mask_scope_interval    : 0.25
+
+  # keep_num_ratio         : 1.0
+  # mask_num_ratio         : 1.0
   ##########################################################################
   ##########################################################################
   # Meta 0.0 0.8520±0.0054
@@ -92,12 +116,12 @@ cora:
   # keep_num_ratio         : 1.0
   # mask_num_ratio         : 1.0 
   ##########################################################################
-  # Meta 0.25              0.6212±0.0082  scheme 1 固定采样效果是真好
+  # Meta 0.25              0.6221±0.0076  scheme 1 固定采样效果是真好
   # scheme                 : 'fix'
   # use_feat_filter        : False
   # use_low                : True
 
-  # mask_strategy          : 'distribution'
+  # mask_strategy          : 'dis'
   # dis_lambda             : 1.0                          # 'mask_strategy'== distribution
 
   # mix_type               : 'degree-csim'                 # 'mask_strategy'== mix
@@ -196,7 +220,7 @@ cora_ml:
   num_layers: 2
   weight_decay: 2e-4
   weight_decay_f: 1e-4
-  max_epoch: 800
+  max_epoch: 1500
   max_epoch_f: 300
   mask_rate: 0.5
   num_layers: 2
@@ -213,27 +237,28 @@ cora_ml:
   alpha_l: 3
   scheduler: True
   ##########################################################################
-  # 自己随便试           
+  # 自己随便试            
+  max_epoch              : 800
   scheme                 : 'sample'
-  use_feat_filter        : False
+  use_feat_filter        : True
   use_low                : True
 
-  mask_strategy          : 'random'
+  mask_strategy          : 'mix'
   dis_lambda             : 1.0                           # 'mask_strategy'== dis
 
   mix_type               : 'degree-csim'             # 'mask_strategy'== mix
-  w_degree               : 1.0                           # 'mask_strategy'== mix
-  w_dis                  : 0.0                           # 'mask_strategy'== mix
-  w_csim                 : 0.0                           # 'mask_strategy'== mix
+  w_degree               : 0.9                           # 'mask_strategy'== mix
+  w_dis                  : 0.2                           # 'mask_strategy'== mix
+  w_csim                 : 0.1                           # 'mask_strategy'== mix
   w_certifyk             : 0.1                           # 'mask_strategy'== mix
 
-  keep_scope_centerline  : 0.3
-  keep_scope_interval    : 0.3 
+  keep_scope_centerline  : 0.2
+  keep_scope_interval    : 0.2
   mask_scope_centerline  : 0.8
   mask_scope_interval    : 0.2
 
-  keep_num_ratio         : 0.5
-  mask_num_ratio         : 0.8
+  keep_num_ratio         : 1.0
+  mask_num_ratio         : 1.0
 
   ##########################################################################
   ##########################################################################
@@ -328,9 +353,10 @@ cora_ml:
   # mask_num_ratio         : 0.9  
  ##########################################################################
   ##########################################################################
-  # DICE 0.5             0.7135±0.0071
+  # DICE 0.5               0.7331±0.0017     加feat filter good
+  # max_epoch              : 800
   # scheme                 : 'sample'
-  # use_feat_filter        : False
+  # use_feat_filter        : True
   # use_low                : True
 
   # mask_strategy          : 'mix'
@@ -338,17 +364,17 @@ cora_ml:
 
   # mix_type               : 'degree-csim'             # 'mask_strategy'== mix
   # w_degree               : 0.9                           # 'mask_strategy'== mix
-  # w_dis                  : 1.0                           # 'mask_strategy'== mix
+  # w_dis                  : 0.2                           # 'mask_strategy'== mix
   # w_csim                 : 0.1                           # 'mask_strategy'== mix
   # w_certifyk             : 0.1                           # 'mask_strategy'== mix
 
-  # keep_scope_centerline  : 0.3
-  # keep_scope_interval    : 0.3 
+  # keep_scope_centerline  : 0.2
+  # keep_scope_interval    : 0.2
   # mask_scope_centerline  : 0.8
   # mask_scope_interval    : 0.2
 
-  # keep_num_ratio         : 0.6
-  # mask_num_ratio         : 0.9  
+  # keep_num_ratio         : 1.0
+  # mask_num_ratio         : 1.0
   ##########################################################################
   ##########################################################################
   # random 0.5            0.7900±0.0034   其实有的时候恢复后面200个节点就够了
@@ -384,7 +410,7 @@ citeseer:
   num_layers: 2
   weight_decay: 2e-5
   weight_decay_f: 0.01
-  max_epoch: 500
+  max_epoch: 1000
   max_epoch_f: 300
   mask_rate: 0.5
   num_layers: 2
@@ -403,26 +429,26 @@ citeseer:
 
   ##########################################################################
   # 自己随便试           
-  scheme                 : 'fix'
-  use_feat_filter        : False
+  scheme                 : 'sample'
+  use_feat_filter        : True
   use_low                : True
 
   mask_strategy          : 'random'
-  dis_lambda             : 1.0                          # 'mask_strategy'== distribution
+  dis_lambda             : 1.0                           # 'mask_strategy'== dis
 
-  mix_type               : 'degree-csim'                 # 'mask_strategy'== mix
-  w_degree               : 0.9                           # 'mask_strategy'== mix
-  w_dis                  : 0.5                           # 'mask_strategy'== mix
-  w_csim                 : 0.1                           # 'mask_strategy'== mix
+  mix_type               : 'degree-csim-dis'             # 'mask_strategy'== mix
+  w_degree               : 0.6                           # 'mask_strategy'== mix
+  w_dis                  : 0.2                           # 'mask_strategy'== mix
+  w_csim                 : 0.2                           # 'mask_strategy'== mix
   w_certifyk             : 0.1                           # 'mask_strategy'== mix
 
-  keep_scope_centerline  : 0.05
-  keep_scope_interval    : 0.05 
-  mask_scope_centerline  : 0.55
-  mask_scope_interval    : 0.45
+  keep_scope_centerline  : 0.3
+  keep_scope_interval    : 0.3 
+  mask_scope_centerline  : 0.8
+  mask_scope_interval    : 0.2
 
-  keep_num_ratio         : 1.0
-  mask_num_ratio         : 1.0   
+  keep_num_ratio         : 0.7
+  mask_num_ratio         : 0.8  
 
 
 
@@ -640,7 +666,7 @@ pubmed:
 
 
 polblogs:
-  seeds: [1,2,3,4]
+  seeds: [3,4]
   lr: 0.001
   lr_f: 0.01
   num_hidden: 64
@@ -665,6 +691,28 @@ polblogs:
   replace_rate: 0.0
   alpha_l: 3
   scheduler: True
+  ##########################################################################
+  # 自己随便试     
+  scheme                 : 'fix'
+  use_feat_filter        : False
+  use_low                : True
+
+  mask_strategy          : 'csim'
+  dis_lambda             : 1.0                           # 'mask_strategy'== dis
+
+  mix_type               : 'degree-csim'             # 'mask_strategy'== mix
+  w_degree               : 0.05                           # 'mask_strategy'== mix
+  w_dis                  : 0.0                           # 'mask_strategy'== mix
+  w_csim                 : 0.95                           # 'mask_strategy'== mix
+  w_certifyk             : 0.1                           # 'mask_strategy'== mix
+
+  keep_scope_centerline  : 0.25
+  keep_scope_interval    : 0.1
+  mask_scope_centerline  : 0.8
+  mask_scope_interval    : 0.1
+
+  keep_num_ratio         : 0.6
+  mask_num_ratio         : 0.8  
   ##########################################################################
   ##########################################################################
   # Meta 0.25            0.8034±0.0294
@@ -738,7 +786,7 @@ polblogs:
   # mask_num_ratio         : 0.9  
   ##########################################################################
   ##########################################################################
-  # random 0.5           0.8786±0.0017   epoch 1500
+  # random 0.5           0.8898±0.0040   epoch 1500
   # scheme                 : 'fix'
   # use_feat_filter        : False
   # use_low                : True
@@ -746,24 +794,24 @@ polblogs:
   # mask_strategy          : 'csim'
   # dis_lambda             : 1.0                           # 'mask_strategy'== dis
 
-  # mix_type               : 'degree-csim-dis'             # 'mask_strategy'== mix
+  # mix_type               : 'degree-csim'             # 'mask_strategy'== mix
   # w_degree               : 0.05                           # 'mask_strategy'== mix
   # w_dis                  : 0.0                           # 'mask_strategy'== mix
-  # w_csim                 : 1.0                           # 'mask_strategy'== mix
+  # w_csim                 : 0.95                           # 'mask_strategy'== mix
   # w_certifyk             : 0.1                           # 'mask_strategy'== mix
 
-  # keep_scope_centerline  : 0.2
-  # keep_scope_interval    : 0.1 
+  # keep_scope_centerline  : 0.25
+  # keep_scope_interval    : 0.1
   # mask_scope_centerline  : 0.8
   # mask_scope_interval    : 0.1
 
-  # keep_num_ratio         : 0.3
-  # mask_num_ratio         : 0.9  
+  # keep_num_ratio         : 0.6
+  # mask_num_ratio         : 0.8  
 
 ogbn-arxiv:
+  seeds: [1]
   lr: 0.001
   lr_f: 0.01
-  num_hidden: 1024
   num_heads: 4
   weight_decay: 0
   weight_decay_f: 5e-4
@@ -783,3 +831,156 @@ ogbn-arxiv:
   alpha_l: 3 # 2
   scheduler: True
   norm: layernorm
+
+  # mini batch
+  optimizer: adamw
+  batch_size: 512
+  batch_size_f: 256
+  max_epoch: 10
+  max_epoch_f: 200
+
+
+  ##########################################################################
+  # 自己随便试           
+  num_hidden             : 1024
+  scheme                 : 'fix'
+  use_feat_filter        : False
+  use_low                : True
+
+  mask_strategy          : 'csim'
+  dis_lambda             : 1.0                           # 'mask_strategy'== dis
+
+  mix_type               : 'degree-csim-dis'             # 'mask_strategy'== mix
+  w_degree               : 0.2                           # 'mask_strategy'== mix
+  w_dis                  : 0.2                           # 'mask_strategy'== mix
+  w_csim                 : 0.6                           # 'mask_strategy'== mix
+  w_certifyk             : 0.2                           # 'mask_strategy'== mix
+
+  keep_scope_centerline  : 0.2
+  keep_scope_interval    : 0.2 
+  mask_scope_centerline  : 0.9
+  mask_scope_interval    : 0.1
+
+  keep_num_ratio         : 0.9
+  mask_num_ratio         : 0.9  
+
+  ##########################################################################
+  ##########################################################################
+  # heuristic 0.5         tranductive  num_hidden 1024  0.5954    发现只用fix dis 效果不好, 用csim效果好
+  #                       tranductive  num_hidden 512   0.5921
+  # num_hidden             : 1024
+  # scheme                 : 'fix'
+  # use_feat_filter        : False
+  # use_low                : True
+
+  # mask_strategy          : 'csim'
+  # dis_lambda             : 1.0                           # 'mask_strategy'== dis
+
+  # mix_type               : 'degree-csim-dis'             # 'mask_strategy'== mix
+  # w_degree               : 0.2                           # 'mask_strategy'== mix
+  # w_dis                  : 0.2                           # 'mask_strategy'== mix
+  # w_csim                 : 0.6                           # 'mask_strategy'== mix
+  # w_certifyk             : 0.2                           # 'mask_strategy'== mix
+
+  # keep_scope_centerline  : 0.2
+  # keep_scope_interval    : 0.2 
+  # mask_scope_centerline  : 0.9
+  # mask_scope_interval    : 0.1
+
+  # keep_num_ratio         : 0.9
+  # mask_num_ratio         : 0.9  
+  ##########################################################################
+  # heuristic 0.5          mini_batch      0.5492 
+  # num_hidden             : 1024
+  # scheme                 : 'fix'
+  # use_feat_filter        : False
+  # use_low                : True
+
+  # mask_strategy          : 'csim'
+  # dis_lambda             : 1.0                           # 'mask_strategy'== dis
+
+  # mix_type               : 'degree-csim-dis'             # 'mask_strategy'== mix
+  # w_degree               : 0.2                           # 'mask_strategy'== mix
+  # w_dis                  : 0.2                           # 'mask_strategy'== mix
+  # w_csim                 : 0.6                           # 'mask_strategy'== mix
+  # w_certifyk             : 0.2                           # 'mask_strategy'== mix
+
+  # keep_scope_centerline  : 0.2
+  # keep_scope_interval    : 0.2 
+  # mask_scope_centerline  : 0.9
+  # mask_scope_interval    : 0.1
+
+  # keep_num_ratio         : 0.9
+  # mask_num_ratio         : 0.9  
+  ##########################################################################
+  ##########################################################################
+  # DICE 0.5               tranductive 发现这种随机的貌似越靠中间越好一些 0.5632
+  # num_hidden             : 512
+  # scheme                 : 'fix'
+  # use_feat_filter        : False
+  # use_low                : True
+
+  # mask_strategy          : 'csim'
+  # dis_lambda             : 1.0                           # 'mask_strategy'== dis
+
+  # mix_type               : 'degree-csim'                 # 'mask_strategy'== mix
+  # w_degree               : 0.8                           # 'mask_strategy'== mix
+  # w_dis                  : 0.2                           # 'mask_strategy'== mix
+  # w_csim                 : 0.2                           # 'mask_strategy'== mix
+  # w_certifyk             : 0.2                           # 'mask_strategy'== mix
+
+  # keep_scope_centerline  : 0.3
+  # keep_scope_interval    : 0.2 
+  # mask_scope_centerline  : 0.7
+  # mask_scope_interval    : 0.2
+
+  # keep_num_ratio         : 0.9
+  # mask_num_ratio         : 0.9  
+  ##########################################################################
+  ##########################################################################
+  # random 0.5             tranductive 发现这种随机的貌似越靠中间越好一些 63.20
+  # num_hidden             : 512
+  # scheme                 : 'sample'
+  # use_feat_filter        : False
+  # use_low                : True
+
+  # mask_strategy          : 'mix'
+  # dis_lambda             : 1.0                           # 'mask_strategy'== dis
+
+  # mix_type               : 'degree-csim'                 # 'mask_strategy'== mix
+  # w_degree               : 0.6                           # 'mask_strategy'== mix
+  # w_dis                  : 0.2                           # 'mask_strategy'== mix
+  # w_csim                 : 0.4                           # 'mask_strategy'== mix
+  # w_certifyk             : 0.2                           # 'mask_strategy'== mix
+
+  # keep_scope_centerline  : 0.3
+  # keep_scope_interval    : 0.2 
+  # mask_scope_centerline  : 0.7
+  # mask_scope_interval    : 0.2
+
+  # keep_num_ratio         : 0.9
+  # mask_num_ratio         : 0.9 
+  ##########################################################################
+  ##########################################################################
+  # PRBCD 0.5              tranductive 60.83
+  # num_hidden             : 512
+  # scheme                 : 'sample'
+  # use_feat_filter        : False
+  # use_low                : True
+
+  # mask_strategy          : 'csim'
+  # dis_lambda             : 1.0                           # 'mask_strategy'== dis
+
+  # mix_type               : 'degree-csim'                 # 'mask_strategy'== mix
+  # w_degree               : 0.9                           # 'mask_strategy'== mix
+  # w_dis                  : 0.2                           # 'mask_strategy'== mix
+  # w_csim                 : 0.1                           # 'mask_strategy'== mix
+  # w_certifyk             : 0.2                           # 'mask_strategy'== mix
+
+  # keep_scope_centerline  : 0.1
+  # keep_scope_interval    : 0.1 
+  # mask_scope_centerline  : 0.8
+  # mask_scope_interval    : 0.2
+
+  # keep_num_ratio         : 0.9
+  # mask_num_ratio         : 0.9  

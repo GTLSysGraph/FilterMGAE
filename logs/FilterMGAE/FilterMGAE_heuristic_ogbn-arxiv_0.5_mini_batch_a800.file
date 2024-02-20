@@ -1,0 +1,27 @@
+Preparing dataset
+attack type: heuristic | ptb_rate: 0.5
+[I] Loading dataset Attack-ogbn-arxiv...
+train_mask, test_mask, val_mask sizes : tensor(90941) tensor(29799) tensor(48603)
+[I] Finished loading.
+[I] Data load time: 3.0193s
+------ Use best configs ------
+{'seeds': [1], 'device': -1, 'max_epoch': 10, 'warmup_steps': -1, 'num_heads': 4, 'num_out_heads': 1, 'num_layers': 3, 'num_hidden': 1024, 'residual': False, 'in_drop': 0.2, 'attn_drop': 0.1, 'norm': 'layernorm', 'lr': 0.001, 'weight_decay': 0.0, 'negative_slope': 0.2, 'activation': 'prelu', 'mask_rate': 0.5, 'drop_edge_rate': 0.5, 'replace_rate': 0.0, 'encoder': 'gat', 'decoder': 'gat', 'loss_fn': 'sce', 'alpha_l': 3, 'optimizer': 'adamw', 'max_epoch_f': 200, 'lr_f': 0.01, 'weight_decay_f': 0.0005, 'linear_prob': True, 'load_model': False, 'save_model': False, 'use_cfg': True, 'logging': False, 'scheduler': True, 'concat_hidden': False, 'scheme': 'fix', 'use_feat_filter': False, 'use_low': True, 'mask_strategy': 'csim', 'dis_lambda': 1.0, 'mix_type': 'degree-csim-dis', 'w_degree': 0.2, 'w_dis': 0.2, 'w_csim': 0.6, 'w_certifyk': 0.2, 'keep_scope_centerline': 0.2, 'keep_scope_interval': 0.2, 'mask_scope_centerline': 0.9, 'mask_scope_interval': 0.1, 'keep_num_ratio': 0.9, 'mask_num_ratio': 0.9, 'pooling': 'mean', 'deg4feat': False, 'batch_size': 512, 'batch_size_f': 256}
+####### Run 1 for seed 1
+# Epoch 0 | train_loss: 0.3931, Memory: 3362.19 MB
+# Epoch 1 | train_loss: 0.3415, Memory: 3362.21 MB
+# Epoch 2 | train_loss: 0.3298, Memory: 3362.21 MB
+# Epoch 3 | train_loss: 0.3215, Memory: 3362.21 MB
+# Epoch 4 | train_loss: 0.3168, Memory: 3362.23 MB
+# Epoch 5 | train_loss: 0.3121, Memory: 3362.24 MB
+# Epoch 6 | train_loss: 0.3092, Memory: 3362.24 MB
+# Epoch 7 | train_loss: 0.3053, Memory: 3362.67 MB
+# Epoch 8 | train_loss: 0.3024, Memory: 3362.82 MB
+# Epoch 9 | train_loss: 0.3010, Memory: 3362.84 MB
+num_train: 169343, num_val: 169343, num_test: 169343
+######## Prepare All Embedding used...
+######## Run seed 0 for LinearProbing...
+training sample:90941
+--- TestAcc: 0.5588, Best ValAcc: 0.6824 in epoch 54 --- 
+# final_acc: 0.5588, std: 0.0000
+# final_acc: 0.5588±0.0000
+# early-stopping_acc: 0.5588±0.0000

@@ -3,6 +3,8 @@ import random
 import scipy.sparse as sp
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score as acc
+import torch
+from datasets_dgl.utils import sparse_mx_to_torch_sparse_tensor
 # 因为版本问题报了上述提示性错误 忽略一下
 from warnings import simplefilter
 simplefilter(action='ignore', category=FutureWarning)
@@ -138,13 +140,20 @@ def calculate(A, X):
 
     low = 0.5 * sp.eye(A.shape[0]) + A
     high = 0.5 * sp.eye(A.shape[0]) - A
-    low = low.todense()
-    high = high.todense()
+    # 因为graph在cpu上，只把feat放在cuda上为了方便计算，算好后吧low和high重新存到cpu上
+    sp_tensor_low  = sparse_mx_to_torch_sparse_tensor(low).cuda()
+    sp_tensor_high = sparse_mx_to_torch_sparse_tensor(high).cuda()
+    low_signal  = torch.sparse.mm(torch.sparse.mm(sp_tensor_low, sp_tensor_low), X)
+    high_signal = torch.sparse.mm(torch.sparse.mm(sp_tensor_high, sp_tensor_high), X)
+    return low_signal.cpu(), high_signal.cpu()
 
-    low_signal = np.dot(np.dot(low, low), X)
-    high_signal = np.dot(np.dot(high, high), X)
-
-    return low_signal, high_signal
+    # trash code! low
+    # low = low.todense()
+    # high = high.todense()
+    # low_signal = np.dot(np.dot(low, low), X)
+    # high_signal = np.dot(np.dot(high, high), X)
+    # return low_signal, high_signal
+    
 
 
 

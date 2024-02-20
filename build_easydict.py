@@ -47,7 +47,7 @@ def build_easydict():
         'use_feat_filter'  : False,
         'use_low'          : True,
         'mask_strategy'    : 'distribution',
-        'dis_lambda '      : 1.0,
+        'dis_lambda'       : 1.0,
         'mix_type'         : 'degree-dis-csim-certifiedk', # 'mask_strategy'== mix
         'w_degree'         : 0.5,                          # 'mask_strategy'== mix
         'w_dis'            : 0.2,                          # 'mask_strategy'== mix
