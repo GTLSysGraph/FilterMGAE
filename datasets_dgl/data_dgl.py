@@ -16,6 +16,11 @@ from datasets_dgl.datasets_file.chameleon import ChameleonDataset
 from datasets_dgl.datasets_file.squirrel import SquirrelDataset
 from datasets_dgl.datasets_file.synthetic import SyntheticDataset
 from datasets_dgl.datasets_file.ogbnarxiv import OgbnArxivDataset
+
+# attack unite test
+from datasets_dgl.datasets_unit_file.coraml import CoraMLUnitDataset
+from datasets_dgl.datasets_unit_file.citeseer import CiteseerUnitDataset
+
 # raw nodecls dataset 
 from dgl.data     import CoraGraphDataset
 from dgl.data     import CiteseerGraphDataset
@@ -30,6 +35,17 @@ from dgl.data.ppi import PPIDataset
 
 # graph dataset
 from dgl.data import TUDataset
+
+def load_unit_test_data(args):
+    if args.dataset in ['Unit-Cora_ml']:
+        return CoraMLUnitDataset(args)
+    elif args.dataset in ['Unit-Citeseer']:
+        return CiteseerUnitDataset(args)
+    else:
+        raise Exception('Unknown dataset!')
+
+
+
 
 
 def load_attack_data(args):

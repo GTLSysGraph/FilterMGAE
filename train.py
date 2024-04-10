@@ -31,8 +31,7 @@ logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=lo
 
 # compare jaccard svd
 from FilterGMAE.compare_jaccard_svd import drop_dissimilar_edges,truncatedSVD
-
-
+from FilterGMAE.compare_garnet      import garnet
 
 def pretrain_mini_batch(model, graph, feat, optimizer, batch_size, max_epoch, device, use_scheduler):
     logging.info("start training GraphMAE mini batch node classification..")
@@ -93,15 +92,18 @@ def pretrain_tranductive(model, graph, feat, optimizer, max_epoch, device, sched
     x = feat.to(device)
 
     # # 对比实验，在评估的时候依然使用原始图，训练过程使用处理后的图，公平比较
-    # # Jaccard
+    # GARNET
+    # modified_adj =  garnet(graph, feat)
+    # weight = torch.tensor(modified_adj.data).float().to(device)
+    # Jaccard
     # modified_adj = drop_dissimilar_edges(x.cpu().numpy(), to_scipy(graph.adj().to_dense()), binary_feature=True, threshold=0.0)
     # svd
     # modified_adj = to_scipy(torch.tensor(truncatedSVD(to_scipy(graph.adj().to_dense()), k=50)))
     # weight = torch.tensor(modified_adj.data).to(device)
 
     # graph_pretrain = dgl.from_scipy(modified_adj)
-    # graph_pretrain = dgl.remove_self_loop(graph_pretrain)
-    # graph_pretrain = dgl.add_self_loop(graph_pretrain) 
+    # graph_pretrain = dgl.remove_self_loop(graph_pretrain)   # garnet 不需要这两行，要不会让向量维度不匹配
+    # graph_pretrain = dgl.add_self_loop(graph_pretrain)      # garnet 不需要这两行，要不会让向量维度不匹配
     # graph_pretrain = graph_pretrain.to(device)
     # graph_pretrain.ndata['train_mask'] = graph.ndata['train_mask']
     # graph_pretrain.ndata['val_mask'] = graph.ndata['val_mask']
@@ -117,9 +119,9 @@ def pretrain_tranductive(model, graph, feat, optimizer, max_epoch, device, sched
         model.train()
 
         # compare
-        # loss, loss_dict = model(graph_pretrain, x)           # jaccard
-        # loss, loss_dict = model(graph_pretrain, x, weight)   # svd
-        loss, loss_dict = model(graph, x)                    # origin
+        # loss, loss_dict = model(graph_pretrain, x)            # jaccard
+        # loss, loss_dict = model(graph_pretrain, x, weight)      # svd，garnet
+        loss, loss_dict = model(graph, x)                     # origin
 
         optimizer.zero_grad()
         loss.backward()
@@ -175,9 +177,14 @@ def Train_FilterMGAE_nodecls(margs):
         # now just attack use
         dataset  = load_attack_data(DATASET['ATTACK'])
         graph = dataset.graph    
+    elif dataset_name.split('-',1)[0] == 'Unit':
+        print("Adaptive attack scenario: " + margs.scenario + ' | ' + "Adaptive attack model: " + margs.adaptive_attack_model)
+        dataset  = load_unit_test_data(margs)
+        graph = dataset.graph
     else:
         dataset  = load_data(dataset_name) # graph,labels = dataset[0] ogbn-arxiv tuple
         graph = dataset[0] if dataset_name.split('-')[0] != 'syn' else dataset.graph
+
 
     num_features = graph.ndata["feat"].shape[1]
     num_classes = dataset.num_classes
@@ -188,7 +195,7 @@ def Train_FilterMGAE_nodecls(margs):
     MDT = build_easydict()
     param         = MDT['MODEL']['PARAM']
     if param.use_cfg:
-        param = load_best_configs(param, dataset_name.split('-',1)[1].lower() if dataset_name.split('-',1)[0] == 'Attack' else dataset_name.lower() , "./configs.yml")
+        param = load_best_configs(param, dataset_name.split('-',1)[1].lower() if dataset_name.split('-',1)[0] == 'Attack' or dataset_name.split('-',1)[0] == 'Unit' else dataset_name.lower() , "./configs.yml")
     print(param)
 
     param.num_nodes    = graph.num_nodes()
@@ -361,7 +368,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataset',        type=str,                   default = 'Cora') #['Cora', 'CiteSeer', 'PubMed', 'DBLP', 'WikiCS', 'Coauthor-CS', 'Coauthor-Phy','Amazon-Computers', 'Amazon-Photo', 'ogbn-arxiv','Reddit','Flickr','Yelp']
     parser.add_argument('--model_name',     type = str,                 default = 'FilterMGAE')
     parser.add_argument('--task',           type = str,                 default = 'nodecls') # 'linkcls' 'graphcls'
-    parser.add_argument('--attack',         type=str,                   default = 'no') # ['DICE-0.1','Meta_Self-0.05' ,...] 攻击方式-扰动率
+    parser.add_argument('--attack',         type = str,                 default = 'no') # ['DICE-0.1','Meta_Self-0.05' ,...] 攻击方式-扰动率
     parser.add_argument('--mode',           type = str,                 default = 'tranductive') # inductive mini-batch
 
     # 同一攻击比例不同划分的图
@@ -371,6 +378,10 @@ if __name__ == '__main__':
     # parser.add_argument('--group',          type=int,                   default= 5,                                                                             help='Group TAG: train rate * 10.')
     # parser.add_argument('--use_g1_split',   action='store_true',        default=False,                                                                          help='whether use_g1_split.')  
 
+    # unit test data
+    parser.add_argument('--scenario',               type = str,                 default = 'poisoning')  #"evasion"
+    parser.add_argument('--adaptive_attack_model',  type = str,                 default = 'jaccard_gcn') # "gcn", "jaccard_gcn", "svd_gcn", "rgcn", "pro_gnn", "gnn_guard", "grand", "soft_median_gdc"
+    parser.add_argument('--split',                  type = str,                 default = 0 )
 
     margs = parser.parse_args()
     Train_func = 'Train_' + margs.model_name + '_' + margs.task
