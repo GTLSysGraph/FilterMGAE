@@ -1084,28 +1084,27 @@ ogbn-arxiv:
 
   ##########################################################################
   # 自己随便试           
-  # num_hidden             : 512
-  # num_heads              : 1
-  # scheme                 : 'fix'
-  # use_feat_filter        : False
-  # use_low                : True
+  num_hidden             : 512
+  scheme                 : 'fix'
+  use_feat_filter        : False
+  use_low                : True
 
-  # mask_strategy          : 'csim'
-  # dis_lambda             : 1.0                           # 'mask_strategy'== dis
+  mask_strategy          : 'csim'
+  dis_lambda             : 1.0                           # 'mask_strategy'== dis
 
-  # mix_type               : 'degree-csim-dis'             # 'mask_strategy'== mix
-  # w_degree               : 0.2                           # 'mask_strategy'== mix
-  # w_dis                  : 0.2                           # 'mask_strategy'== mix
-  # w_csim                 : 0.6                           # 'mask_strategy'== mix
-  # w_certifyk             : 0.2                           # 'mask_strategy'== mix
+  mix_type               : 'degree-csim'                 # 'mask_strategy'== mix
+  w_degree               : 0.8                           # 'mask_strategy'== mix
+  w_dis                  : 0.2                           # 'mask_strategy'== mix
+  w_csim                 : 0.2                           # 'mask_strategy'== mix
+  w_certifyk             : 0.2                           # 'mask_strategy'== mix
 
-  # keep_scope_centerline  : 0.2
-  # keep_scope_interval    : 0.2 
-  # mask_scope_centerline  : 0.9
-  # mask_scope_interval    : 0.1
+  keep_scope_centerline  : 0.4
+  keep_scope_interval    : 0.1 
+  mask_scope_centerline  : 0.7
+  mask_scope_interval    : 0.1
 
-  # keep_num_ratio         : 0.9
-  # mask_num_ratio         : 0.9  
+  keep_num_ratio         : 1.0
+  mask_num_ratio         : 1.0  
 
   ##########################################################################
   ##########################################################################
@@ -1157,7 +1156,7 @@ ogbn-arxiv:
   # mask_num_ratio         : 0.9  
   ##########################################################################
   ##########################################################################
-  # DICE 0.5               tranductive 发现这种随机的貌似越靠中间越好一些 0.5632
+  # DICE 0.5               tranductive 发现这种随机的貌似越靠中间越好一些 0.5997
   # num_hidden             : 512
   # scheme                 : 'fix'
   # use_feat_filter        : False
@@ -1172,13 +1171,13 @@ ogbn-arxiv:
   # w_csim                 : 0.2                           # 'mask_strategy'== mix
   # w_certifyk             : 0.2                           # 'mask_strategy'== mix
 
-  # keep_scope_centerline  : 0.3
-  # keep_scope_interval    : 0.2 
+  # keep_scope_centerline  : 0.4
+  # keep_scope_interval    : 0.1 
   # mask_scope_centerline  : 0.7
-  # mask_scope_interval    : 0.2
+  # mask_scope_interval    : 0.1
 
-  # keep_num_ratio         : 0.9
-  # mask_num_ratio         : 0.9  
+  # keep_num_ratio         : 1.0
+  # mask_num_ratio         : 1.0  
   ##########################################################################
   ##########################################################################
   # random 0.5             tranductive 发现这种随机的貌似越靠中间越好一些 63.20
