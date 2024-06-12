@@ -91,7 +91,7 @@ def pretrain_tranductive(model, graph, feat, optimizer, max_epoch, device, sched
     graph = graph.to(device)
     x = feat.to(device)
 
-    # # 对比实验，在评估的时候依然使用原始图，训练过程使用处理后的图，公平比较
+    # # 对比实验，在评估的时候依然使用graph，训练过程使用处理后的图，公平比较
     # GARNET
     # modified_adj =  garnet(graph, feat)
     # weight = torch.tensor(modified_adj.data).float().to(device)
