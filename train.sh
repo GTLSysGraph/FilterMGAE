@@ -1,7 +1,7 @@
-CUDA_VISIBLE_DEVICES=1
+CUDA_VISIBLE_DEVICES=0
 python train.py \
---dataset  'Attack-ogbn-arxiv' \
---attack   'DICE-0.5' \
+--dataset  'Attack-Cora' \
+--attack   'Meta_Self-0.25' \
 --task 'nodecls' \
 --mode 'tranductive' \
 --model_name 'FilterMGAE'

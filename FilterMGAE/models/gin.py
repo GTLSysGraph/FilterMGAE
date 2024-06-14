@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import dgl.function as fn
 from dgl.utils import expand_as_pair
 
-from FilterGMAE.utils import create_activation, NormLayer, create_norm
+from FilterMGAE.utils import create_activation, NormLayer, create_norm
 
 
 class GIN(nn.Module):

@@ -15,7 +15,7 @@ from .gcn import GCN
 from .dot_gat import DotGAT
 from .guard   import GATGuard,GCNAdjNorm
 from .loss_func import sce_loss
-from FilterGMAE.utils import create_norm, drop_edge
+from FilterMGAE.utils import create_norm, drop_edge
 
 
 def setup_module(m_type, enc_dec, in_dim, num_hidden, out_dim, num_layers, dropout, activation, residual, norm, nhead, nhead_out, attn_drop, negative_slope=0.2, concat_out=True) -> nn.Module:
@@ -76,6 +76,19 @@ def setup_module(m_type, enc_dec, in_dim, num_hidden, out_dim, num_layers, dropo
             norm=create_norm(norm),
             encoding=(enc_dec == "encoding")
         )
+    elif m_type == "guard":
+        mod = GATGuard( in_features=in_dim,
+                        out_features=num_hidden,
+                        hidden_features=num_hidden,
+                        n_layers=num_layers,
+                        n_heads=nhead,
+                        activation=F.leaky_relu,
+                        layer_norm=False,
+                        feat_norm=None,
+                        adj_norm_func=GCNAdjNorm,
+                        drop=False,
+                        attention=True,
+                        dropout=0.0)
     elif m_type == "mlp":
         # * just for decoder 
         mod = nn.Sequential(
@@ -205,7 +218,7 @@ class PreModel(nn.Module):
 
 
 
-        # build encoder
+        # # build encoder
         self.encoder = setup_module(
             m_type=encoder_type,
             enc_dec="encoding",
@@ -224,7 +237,7 @@ class PreModel(nn.Module):
             norm=norm,
         )
 
-        # build decoder for attribute prediction
+        # # build decoder for attribute prediction
         self.decoder = setup_module(
             m_type=decoder_type,
             enc_dec="decoding",

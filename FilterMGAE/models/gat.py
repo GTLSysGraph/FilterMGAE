@@ -5,7 +5,7 @@ from dgl.ops import edge_softmax
 import dgl.function as fn
 from dgl.utils import expand_as_pair
 
-from FilterGMAE.utils import create_activation
+from FilterMGAE.utils import create_activation
 
 
 class GAT(nn.Module):

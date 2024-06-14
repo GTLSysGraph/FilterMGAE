@@ -26,26 +26,26 @@ cora:
 
   ##########################################################################
   # 随便试
-  scheme                 : 'sample'
+  scheme                 : 'fix'
   use_feat_filter        : False
   use_low                : True
 
-  mask_strategy          : 'random'
+  mask_strategy          : 'dis'
   dis_lambda             : 1.0                          # 'mask_strategy'== distribution
 
   mix_type               : 'degree-csim'                 # 'mask_strategy'== mix
-  w_degree               : 0.2                           # 'mask_strategy'== mix
+  w_degree               : 0.9                           # 'mask_strategy'== mix
   w_dis                  : 0.5                           # 'mask_strategy'== mix
-  w_csim                 : 0.8                           # 'mask_strategy'== mix
+  w_csim                 : 0.1                           # 'mask_strategy'== mix
   w_certifyk             : 0.1                           # 'mask_strategy'== mix
 
-  keep_scope_centerline  : 0.25
-  keep_scope_interval    : 0.25 
-  mask_scope_centerline  : 0.75
-  mask_scope_interval    : 0.25
+  keep_scope_centerline  : 0.05
+  keep_scope_interval    : 0.05 
+  mask_scope_centerline  : 0.55
+  mask_scope_interval    : 0.45
 
   keep_num_ratio         : 1.0
-  mask_num_ratio         : 1.0
+  mask_num_ratio         : 1.0   
 
   ##########################################################################
   ##########################################################################
@@ -242,7 +242,7 @@ cora_ml:
   num_layers: 2
   weight_decay: 2e-4
   weight_decay_f: 1e-4
-  max_epoch: 1    # garnet 100
+  max_epoch: 100    # garnet svd 100
   max_epoch_f: 300
   mask_rate: 0.5
   num_layers: 2
@@ -527,7 +527,7 @@ citeseer:
   num_layers: 2
   weight_decay: 2e-5
   weight_decay_f: 0.01
-  max_epoch: 300
+  max_epoch: 300    # svd garnet
   max_epoch_f: 300
   mask_rate: 0.5
   num_layers: 2
@@ -547,10 +547,10 @@ citeseer:
   ##########################################################################
   # 自己随便试            
   scheme                 : 'sample' # fix
-  use_feat_filter        : True
-  use_low                : True
+  use_feat_filter        : False
+  use_low                : False
 
-  mask_strategy          : 'csim'
+  mask_strategy          : 'random'
   dis_lambda             : 1.0                           # 'mask_strategy'== dis
 
   mix_type               : 'degree-csim'                 # 'mask_strategy'== mix

@@ -6,7 +6,7 @@ import dgl.function as fn
 from  easydict  import EasyDict
 import pandas as pd
 
-from FilterGMAE.utils import (
+from FilterMGAE.utils import (
     create_optimizer,
     set_random_seed,
     TBLogger,
@@ -19,19 +19,19 @@ from datasets_dgl.utils import to_scipy
 from datasets_dgl.utils_generate_synthetic import *
 from build_easydict import build_easydict
 
-from FilterGMAE.evaluation                  import node_classification_evaluation
-from FilterGMAE.evaluation_mini_batch       import evaluete_mini_batch
-from FilterGMAE.models                      import build_model
-from FilterGMAE.compute_score               import * 
-from FilterGMAE.utils                       import show_occupied_memory
+from FilterMGAE.evaluation                  import node_classification_evaluation
+from FilterMGAE.evaluation_mini_batch       import evaluete_mini_batch
+from FilterMGAE.models                      import build_model
+from FilterMGAE.compute_score               import * 
+from FilterMGAE.utils                       import show_occupied_memory
 
 import matplotlib.pyplot as plt
 
 logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO)
 
 # compare jaccard svd
-from FilterGMAE.compare_jaccard_svd import drop_dissimilar_edges,truncatedSVD
-from FilterGMAE.compare_garnet      import garnet
+from FilterMGAE.compare_jaccard_svd import drop_dissimilar_edges,truncatedSVD
+from FilterMGAE.compare_garnet      import garnet
 
 def pretrain_mini_batch(model, graph, feat, optimizer, batch_size, max_epoch, device, use_scheduler):
     logging.info("start training GraphMAE mini batch node classification..")
@@ -96,7 +96,7 @@ def pretrain_tranductive(model, graph, feat, optimizer, max_epoch, device, sched
     # modified_adj =  garnet(graph, feat)
     # weight = torch.tensor(modified_adj.data).float().to(device)
     # Jaccard
-    # modified_adj = drop_dissimilar_edges(x.cpu().numpy(), to_scipy(graph.adj().to_dense()), binary_feature=True, threshold=0.0)
+    # modified_adj = drop_dissimilar_edges(x.cpu().numpy(), to_scipy(graph.adj().to_dense()), binary_feature=True, threshold=0.04)
     # svd
     # modified_adj = to_scipy(torch.tensor(truncatedSVD(to_scipy(graph.adj().to_dense()), k=50)))
     # weight = torch.tensor(modified_adj.data).to(device)
@@ -119,9 +119,9 @@ def pretrain_tranductive(model, graph, feat, optimizer, max_epoch, device, sched
         model.train()
 
         # compare
-        # loss, loss_dict = model(graph_pretrain, x)            # jaccard
-        # loss, loss_dict = model(graph_pretrain, x, weight)      # svd，garnet
-        loss, loss_dict = model(graph, x)                     # origin
+        # loss, loss_dict = model(graph_pretrain, x)                # jaccard
+        # loss, loss_dict = model(graph_pretrain, x, weight)        # svd，garnet
+        loss, loss_dict = model(graph, x)                           # origin
 
         optimizer.zero_grad()
         loss.backward()
