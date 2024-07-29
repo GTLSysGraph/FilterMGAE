@@ -242,7 +242,7 @@ cora_ml:
   num_layers: 2
   weight_decay: 2e-4
   weight_decay_f: 1e-4
-  max_epoch: 100    # garnet svd 100
+  max_epoch: 1500    # garnet svd 100
   max_epoch_f: 300
   mask_rate: 0.5
   num_layers: 2
@@ -261,11 +261,12 @@ cora_ml:
   ##########################################################################
   # 自己随便试            
   # max_epoch              : 800
+  num_hidden: 64
   scheme                 : 'sample'
-  use_feat_filter        : False
+  use_feat_filter        : True
   use_low                : True
 
-  mask_strategy          : 'random'
+  mask_strategy          : 'degree'
   dis_lambda             : 1.0                           # 'mask_strategy'== dis
 
   mix_type               : 'degree-csim'             # 'mask_strategy'== mix
@@ -274,16 +275,16 @@ cora_ml:
   w_csim                 : 0.1                           # 'mask_strategy'== mix
   w_certifyk             : 0.1                           # 'mask_strategy'== mix
 
-  keep_scope_centerline  : 0.25
-  keep_scope_interval    : 0.25
-  mask_scope_centerline  : 0.75
-  mask_scope_interval    : 0.25
+  keep_scope_centerline  : 0.3
+  keep_scope_interval    : 0.3
+  mask_scope_centerline  : 0.8
+  mask_scope_interval    : 0.2
 
   keep_num_ratio         : 1.0
   mask_num_ratio         : 1.0
   ##########################################################################
   ##########################################################################
-  # unit test jaccard_gcn    0.8199±0.0015  seed 1,2
+  # unit test jaccard_gcn   0.6680±0.0000  seed 1,2    (split 3  755 0.1489)
   # num_hidden: 64
   # scheme                 : 'sample'
   # use_feat_filter        : True
@@ -303,11 +304,11 @@ cora_ml:
   # mask_scope_centerline  : 0.8
   # mask_scope_interval    : 0.2
 
-  # keep_num_ratio         : 0.3
-  # mask_num_ratio         : 0.3
+  # keep_num_ratio         : 0.8
+  # mask_num_ratio         : 0.8
   ##########################################################################
   ##########################################################################
-  # unit test svd_gcn        0.8514±0.0015  seed 1,2
+  # unit test svd_gcn        0.8410±0.0015  seed 1,2   (split 4 532 0.1050)
   # num_hidden: 64
   # scheme                 : 'sample'
   # use_feat_filter        : True
@@ -331,10 +332,10 @@ cora_ml:
   # mask_num_ratio         : 0.6
   ##########################################################################
   ##########################################################################
-  # unit test gnn_guard   0.7235±0.0075  seed 1,2
+  # unit test gnn_guard   0.7477±0.0053  seed 1,2    (split 3 760 0.1499)
   # num_hidden: 64
   # scheme                 : 'sample'
-  # use_feat_filter        : False
+  # use_feat_filter        : True
   # use_low                : True
 
   # mask_strategy          : 'degree'
@@ -355,10 +356,10 @@ cora_ml:
   # mask_num_ratio         : 0.2
   ##########################################################################
   ##########################################################################
-  # unit test grand       0.5526±0.0083  seed 1,2
+  # unit test grand       0.5687±0.0033  seed 1,2   (split 3 746 0.1472)
   # num_hidden: 64
   # scheme                 : 'sample'
-  # use_feat_filter        : False
+  # use_feat_filter        : True
   # use_low                : True
 
   # mask_strategy          : 'degree'
@@ -527,7 +528,7 @@ citeseer:
   num_layers: 2
   weight_decay: 2e-5
   weight_decay_f: 0.01
-  max_epoch: 300    # svd garnet
+  max_epoch: 800    # svd garnet
   max_epoch_f: 300
   mask_rate: 0.5
   num_layers: 2
@@ -545,12 +546,12 @@ citeseer:
   scheduler: True
 
   ##########################################################################
-  # 自己随便试            
+  # 自己随便试           
   scheme                 : 'sample' # fix
-  use_feat_filter        : False
-  use_low                : False
+  use_feat_filter        : True
+  use_low                : True
 
-  mask_strategy          : 'random'
+  mask_strategy          : 'degree'
   dis_lambda             : 1.0                           # 'mask_strategy'== dis
 
   mix_type               : 'degree-csim'                 # 'mask_strategy'== mix
@@ -559,21 +560,21 @@ citeseer:
   w_csim                 : 0.8                           # 'mask_strategy'== mix
   w_certifyk             : 0.1                           # 'mask_strategy'== mix
 
-  keep_scope_centerline  : 0.3
-  keep_scope_interval    : 0.3 
+  keep_scope_centerline  : 0.2
+  keep_scope_interval    : 0.2 
   mask_scope_centerline  : 0.8
   mask_scope_interval    : 0.2
 
-  keep_num_ratio         : 0.5
-  mask_num_ratio         : 0.5  
+  keep_num_ratio         : 0.4
+  mask_num_ratio         : 0.4
   ##########################################################################
   ##########################################################################
-  # unit test jaccard_gcn   0.6623±0.0077
+  # unit test jaccard_gcn   0.6623±0.0077        (split 0  550  0.1499)
   # scheme                 : 'sample' # fix
-  # use_feat_filter        : True
+  # use_feat_filter        : False
   # use_low                : True
 
-  # mask_strategy          : 'csim'
+  # mask_strategy          : 'degree'
   # dis_lambda             : 1.0                           # 'mask_strategy'== dis
 
   # mix_type               : 'degree-csim'                 # 'mask_strategy'== mix
@@ -582,8 +583,8 @@ citeseer:
   # w_csim                 : 0.8                           # 'mask_strategy'== mix
   # w_certifyk             : 0.1                           # 'mask_strategy'== mix
 
-  # keep_scope_centerline  : 0.3
-  # keep_scope_interval    : 0.3 
+  # keep_scope_centerline  : 0.2
+  # keep_scope_interval    : 0.2 
   # mask_scope_centerline  : 0.8
   # mask_scope_interval    : 0.2
 
@@ -591,7 +592,7 @@ citeseer:
   # mask_num_ratio         : 0.5  
   ##########################################################################
   ##########################################################################
-  # unit test svd_gcn   0.7675±0.0039
+  # unit test svd_gcn   0.7509±0.0015        (split 0  440  0.1200)
   # scheme                 : 'sample' # fix
   # use_feat_filter        : True
   # use_low                : True
@@ -614,7 +615,7 @@ citeseer:
   # mask_num_ratio         : 0.5  
   ##########################################################################
   ##########################################################################
-  # unit test gnn_guard  0.6863±0.0027  seed 1,2
+  # unit test gnn_guard  0.6762±0.0027  seed 1,2           (split 3 550  0.1499)
   # scheme                 : 'sample' # fix
   # use_feat_filter        : True
   # use_low                : True
@@ -633,15 +634,15 @@ citeseer:
   # mask_scope_centerline  : 0.8
   # mask_scope_interval    : 0.2
 
-  # keep_num_ratio         : 0.4
-  # mask_num_ratio         : 0.5  
+  # keep_num_ratio         : 0.2
+  # mask_num_ratio         : 0.8
 
 
 
   ##########################################################################
   ##########################################################################
-  # unit test grand      0.5672±0.0080  seed 1,2
-  # scheme                 : 'fix' # fix
+  # unit test grand      0.6887±0.0074  seed 1,2     (split 3 550  0.1499)
+  # scheme                 : 'sample' # fix
   # use_feat_filter        : False
   # use_low                : True
 
@@ -659,8 +660,8 @@ citeseer:
   # mask_scope_centerline  : 0.6
   # mask_scope_interval    : 0.4
 
-  # keep_num_ratio         : 0.9
-  # mask_num_ratio         : 0.5  
+  # keep_num_ratio         : 0.5
+  # mask_num_ratio         : 0.8  
 
   ##########################################################################
   ##########################################################################

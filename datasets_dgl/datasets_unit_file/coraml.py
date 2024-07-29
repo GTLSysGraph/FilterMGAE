@@ -12,7 +12,7 @@ class CoraMLUnitDGL(torch.utils.data.Dataset):  # Adaptive attack model
 
         data_dir = '/home/songsh/datasets_dgl/all_data_unit_test/%s/%s/' % (args.scenario, data_name)
 
-        adj = torch.load(data_dir + '%s/%s/A_perturbed.pt' % (args.split, args.adaptive_attack_model), map_location= 'cuda')
+        adj = torch.load(data_dir + '%s/%s/A_perturbed_budget_%s_ptb_%s.pt' % (args.split, args.adaptive_attack_model, args.budget, args.unit_ptb), map_location= 'cuda')
         g = dgl.from_scipy(to_scipy(adj))
         
         features = to_tensor_features(scipy.sparse.load_npz(data_dir + '%s_features.npz' % (data_name))).to_dense()
@@ -28,7 +28,8 @@ class CoraMLUnitDGL(torch.utils.data.Dataset):  # Adaptive attack model
         g.ndata['train_mask'] =   torch.tensor(self.train_mask)
         g.ndata['val_mask']   =   torch.tensor(self.val_mask)
         g.ndata['test_mask']  =   torch.tensor(self.test_mask)
-        g = dgl.add_self_loop(g)
+        g  = dgl.remove_self_loop(g)
+        g  = dgl.add_self_loop(g) # 不管如何这里要处理一下，因为有的加载的文件中已经包含自环了，但有的文件没有，所以要统一，要不如果有自环的再加就两层自环了！还好自己的代码中对自环处理后再重加，惊险
 
         self.graph = g
 

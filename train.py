@@ -178,7 +178,7 @@ def Train_FilterMGAE_nodecls(margs):
         dataset  = load_attack_data(DATASET['ATTACK'])
         graph = dataset.graph    
     elif dataset_name.split('-',1)[0] == 'Unit':
-        print("Adaptive attack scenario: " + margs.scenario + ' | ' + "Adaptive attack model: " + margs.adaptive_attack_model)
+        print("Adaptive attack scenario: " + margs.scenario + ' | ' + "Adaptive attack model: " + margs.adaptive_attack_model + ' | ' +  "Budget: " + margs.budget + ' | ' + "Unit Ptb: " + margs.unit_ptb)
         dataset  = load_unit_test_data(margs)
         graph = dataset.graph
     else:
@@ -371,6 +371,9 @@ if __name__ == '__main__':
     parser.add_argument('--attack',         type = str,                 default = 'no') # ['DICE-0.1','Meta_Self-0.05' ,...] 攻击方式-扰动率
     parser.add_argument('--mode',           type = str,                 default = 'tranductive') # inductive mini-batch
 
+
+
+
     # 同一攻击比例不同划分的图
     # parser.add_argument('--train_size',     type=float,                 default= 0.5,                                                                           help='train rate.')
     # parser.add_argument('--val_size',       type=float,                 default= 0.2,                                                                           help='val rate.')
@@ -378,10 +381,17 @@ if __name__ == '__main__':
     # parser.add_argument('--group',          type=int,                   default= 5,                                                                             help='Group TAG: train rate * 10.')
     # parser.add_argument('--use_g1_split',   action='store_true',        default=False,                                                                          help='whether use_g1_split.')  
 
+
+
+
     # unit test data
     parser.add_argument('--scenario',               type = str,                 default = 'poisoning')  #"evasion"
     parser.add_argument('--adaptive_attack_model',  type = str,                 default = 'jaccard_gcn') # "gcn", "jaccard_gcn", "svd_gcn", "rgcn", "pro_gnn", "gnn_guard", "grand", "soft_median_gdc"
     parser.add_argument('--split',                  type = str,                 default = 0 )
+    # 这两个值自己取文件夹中对应去看
+    parser.add_argument('--budget',                 type=  str,            default=5  )                
+    parser.add_argument('--unit_ptb',               type=  str,                 default= 0.0,    help='unit rate.')
+
 
     margs = parser.parse_args()
     Train_func = 'Train_' + margs.model_name + '_' + margs.task
