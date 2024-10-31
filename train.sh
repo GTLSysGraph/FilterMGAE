@@ -14,7 +14,7 @@ python train.py \
 # --dataset                  'Unit-Cora_ml' \
 # --adaptive_attack_model    'svd_gcn' \
 # --split                    1 \
-# --scenario                 'poisoning' \
+# --scenario                  \
 # --budget                   684 \
 # --unit_ptb                 0.1349
 
