@@ -1,7 +1,7 @@
 # <center>Equipping Graph Autoencoders: Revisiting Masking Strategies from a Robustness Perspective</center>
 ***This work has been accepted by SDM 2025 (SIAM International Conference on Data Mining)*** This repository contains the code for our paper ***"Equipping Graph Autoencoders: Revisiting Masking Strategies from a Robustness Perspective"***
 
-![FilterMGAE](https://github.com/GTLSysGraph/FilterMGAE/raw/master/FilterMGAE_Framework.pdf)
+![FilterMGAE](https://github.com/GTLSysGraph/FilterMGAE/blob/master/FilterMGAE_Framework.png)
 
 
 
