@@ -275,7 +275,7 @@ def node_classification_linear_probing(embeddings, labels, lr, weight_decay, max
             epoch_iter.set_description(f"# Epoch: {epoch}, train_loss:{loss.item(): .4f}, val_acc:{val_acc:.4f}")
 
     best_model.eval()
-    encoder = best_model #因为太大了，所以就只用best model了
+    encoder = best_model #太大了，用best model了
     with torch.no_grad():
         test_acc = eval_forward(test_loader, test_label)
     if mute:

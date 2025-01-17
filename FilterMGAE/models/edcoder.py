@@ -159,7 +159,7 @@ class PreModel(nn.Module):
         self._keep_num_ratio        = keep_num_ratio
         self._mask_num_ratio        = mask_num_ratio
         if mode == 'tranductive':
-            # add by ssh 全图的时候可以在init里面这样算，但是mini batch的时候这样就不行了,需要根据每个minibatch的g计算一下，这部分要放在forward里面
+            # add by ssh 整张图的时候可以在init里面这样算，mini batch的时候需要根据每个minibatch的g计算一下，这部分放在forward里面
             self._keep_scope_centerline_index       = int(num_nodes * self._keep_scope_centerline)
             self._keep_scope_len                    = int(num_nodes * self._keep_scope_interval) 
             self._mask_scope_centerline_index       = int(num_nodes * self._mask_scope_centerline)
@@ -189,7 +189,7 @@ class PreModel(nn.Module):
         dec_in_dim = num_hidden
         dec_num_hidden = num_hidden // nhead_out if decoder_type in ("gat", "dotgat") else num_hidden 
 
-        # add by ssh compare 使用不同的鲁棒性编解码器
+        # add by ssh compare 使用不同的鲁棒编解码器做对比实验
         # self.encoder = GATGuard(in_features=in_dim,
         #                         out_features=enc_num_hidden,
         #                         hidden_features=enc_num_hidden,
@@ -314,7 +314,7 @@ class PreModel(nn.Module):
     def encoding_mask_noise(self, g, x, mask_rate, mode):
         num_nodes = g.num_nodes()
 
-        # add by ssh # 如果是mini batch，需要根据每个subgraph算一下范围
+        # mini batch，需要根据每个subgraph算一下范围
         if mode == 'mini_batch':
             self._keep_scope_centerline_index       = int(num_nodes * self._keep_scope_centerline)
             self._keep_scope_len                    = int(num_nodes * self._keep_scope_interval) 
@@ -428,7 +428,7 @@ class PreModel(nn.Module):
         
 
         ######### node center cosine similarity masking
-        # 这里有点意思，sim低的节点都是度比较大的点，看来不能理想话，还是得实验看
+        # 这里有点意思，sim低的节点是度比较大的点
         # idx_mask_dis = g.ndata['csim_sorted'][:800] # keep的范围大一些 比例低一些
         # idx_keep_dis = g.ndata['csim_sorted'][2000:]
         # perm_keep  = torch.randperm(len(idx_keep_dis), device=x.device)
@@ -461,7 +461,7 @@ class PreModel(nn.Module):
         # num_mask_nodes = len(mask_nodes)
 
 
-        # 这个感觉可以放大一下，用train的去重建test的，有效果，但用test的重建train的，越来越差，相当于重建了错误的信息，可以进一步分析, 引发我们讨论重建信息的正确性和鲁棒性问题
+        # 这个感觉可以放大一下，用train的去重建test的，有效果，但用test的重建train的，越来越差，相当于重建了错误的信息，引发对重建信息的正确性和鲁棒性问题的讨论
 
 
         if self._replace_rate > 0:
@@ -512,8 +512,7 @@ class PreModel(nn.Module):
             enc_rep = torch.cat(all_hidden, dim=1)
 
 
-        ######################## add by ssh
-        # 折腾一晚上，无效！！go
+        ######################## add by ssh # not effictive
         # with torch.no_grad():
         #     embed_masked = self.encoder_ema(use_g, x,return_hidden=False)[mask_nodes]
         # # k和v的来源总是相同的,q 可以不同 query,key,value  q决定输出的维度，

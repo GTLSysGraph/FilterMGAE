@@ -14,7 +14,7 @@ def node_classification_evaluation(model, graph, x, num_classes, lr_f, weight_de
             in_feat = x.shape[1]
         encoder = LogisticRegression(in_feat, num_classes)
     else:
-        # 注意这里改变了encoder的结构encoder和model.encoder应该是分开的，但是这里是关联的，encoder变了，model.encoder也变，应该deepcopy新的模型分开形成独立个体，原始代码写的有点问题
+        # 注意这里改变了encoder的结构encoder和model.encoder应该是分开的，但是这里是关联的，encoder变了，model.encoder也变，应该deepcopy新的模型分开形成独立个体
         encoder = copy.deepcopy(model.encoder)
         encoder.reset_classifier(num_classes)
 

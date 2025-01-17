@@ -140,7 +140,7 @@ def calculate(A, X):
 
     low = 0.5 * sp.eye(A.shape[0]) + A
     high = 0.5 * sp.eye(A.shape[0]) - A
-    # 因为graph在cpu上，只把feat放在cuda上为了方便计算，算好后吧low和high重新存到cpu上
+    # 因为graph在cpu上，只把feat放在cuda上为了方便计算，算好后low和high重新存到cpu上
     sp_tensor_low  = sparse_mx_to_torch_sparse_tensor(low).cuda()
     sp_tensor_high = sparse_mx_to_torch_sparse_tensor(high).cuda()
     low_signal  = torch.sparse.mm(torch.sparse.mm(sp_tensor_low, sp_tensor_low), X)
