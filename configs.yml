@@ -25,7 +25,7 @@ cora:
   scheduler: True
 
   ##########################################################################
-  # 随便试
+  # try
   scheme                 : 'fix'
   use_feat_filter        : False
   use_low                : True
@@ -49,7 +49,7 @@ cora:
 
   ##########################################################################
   ##########################################################################
-  # raw 0.8425±0.0017   貌似只能0.5比例才可以，不降低就行吧
+  # raw 0.8425±0.0017       mask_rate = 0.5
   # scheme                 : 'sample'
   # use_feat_filter        : False
   # use_low                : True
@@ -138,7 +138,7 @@ cora:
   # keep_num_ratio         : 1.0
   # mask_num_ratio         : 1.0 
   ##########################################################################
-  # Meta 0.25              0.6221±0.0076  scheme 1 固定采样效果是真好
+  # Meta 0.25              0.6221±0.0076  scheme 1  'fix' is perfect
   # scheme                 : 'fix'
   # use_feat_filter        : False
   # use_low                : True
@@ -161,7 +161,7 @@ cora:
   # mask_num_ratio         : 1.0   
   ##########################################################################
   ##########################################################################
-  # heuristic 0.5       0.7872±0.0034  scheme 1 按照权重采样
+  # heuristic 0.5       0.7872±0.0034  scheme 1  'sample' is good
   # scheme                 : 'sample'
   # use_feat_filter        : True
   # use_low                : True
@@ -184,7 +184,7 @@ cora:
   # mask_num_ratio         : 0.8   
   ##########################################################################
   ##########################################################################
-  # DICE 0.5            0.6969±0.0029   scheme 1 按照权重采样
+  # DICE 0.5            0.6969±0.0029   scheme 1  'sample' is good
   # scheme                 : 'sample'
   # use_feat_filter        : True
   # use_low                : True
@@ -207,7 +207,7 @@ cora:
   # mask_num_ratio         : 0.8  
   ##########################################################################
   ##########################################################################
-  # random 0.5          77.54±0.29   scheme 1 按照权重采样
+  # random 0.5          77.54±0.29   scheme 1  'sample' is good
   # scheme                 : 'sample'
   # use_feat_filter        : True
   # use_low                : True
@@ -495,7 +495,7 @@ cora_ml:
   # mask_num_ratio         : 1.0
   ##########################################################################
   ##########################################################################
-  # random 0.5            0.7900±0.0034   其实有的时候恢复后面200个节点就够了
+  # random 0.5            0.7900±0.0034   only 200 nodes reconstruct enough
   # scheme                 : 'sample'
   # use_feat_filter        : False
   # use_low                : True
@@ -546,7 +546,7 @@ citeseer:
   scheduler: True
 
   ##########################################################################
-  # 自己随便试           
+  # try           
   scheme                 : 'sample' # fix
   use_feat_filter        : True
   use_low                : True
@@ -783,7 +783,7 @@ pubmed:
   scheduler: True
   # add
   ##########################################################################
-  # 自己随便试       
+  # try       
   num_hidden: 512   # 在pubmed上num_hidden大点，heads小效果更好
   num_heads: 1      # 在pubmed上num_hidden大点，heads小效果更好
   scheme                 : 'sample'
@@ -935,7 +935,7 @@ polblogs:
   alpha_l: 3
   scheduler: True
   ##########################################################################
-  # 自己随便试     
+  # try   
   scheme                 : 'fix'
   use_feat_filter        : False
   use_low                : True
@@ -959,7 +959,7 @@ polblogs:
   ##########################################################################
   ##########################################################################
   # Meta 0.25            0.8034±0.0294
-  # 对于polblogs来说，cmis是degree的倒数，即度大的节点对应的csim更小，实验发现重建度小的节点效果极好，这是为啥,很有意思，居然能调到80.34, 感觉还可以更高，但是目前就这样  epoch 1500
+  # 对于polblogs来说，cmis是degree的倒数，即度大的节点对应的csim更小，实验发现重建度小的节点效果极好，很有意思，居然能调到80.34, 感觉还可以更好 epoch 1500
   # scheme                 : 'fix'
   # use_feat_filter        : False
   # use_low                : True
@@ -1084,7 +1084,7 @@ ogbn-arxiv:
 
 
   ##########################################################################
-  # 自己随便试           
+  # try         
   num_hidden             : 512
   scheme                 : 'fix'
   use_feat_filter        : False
