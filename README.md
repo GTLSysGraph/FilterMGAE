@@ -1,5 +1,8 @@
 # <center>Equipping Graph Autoencoders: Revisiting Masking Strategies from a Robustness Perspective</center>
-***This work has been accepted by SDM 2025 (SIAM International Conference on Data Mining)***
+***This work has been accepted by SDM 2025 (SIAM International Conference on Data Mining)*** This repository contains the code for our paper ***"Equipping Graph Autoencoders: Revisiting Masking Strategies from a Robustness Perspective"***
+
+
+
 
 ## 🌵 Dependencies
 We recommend running on Linux systems (e.g. Ubuntu and CentOS). Other systems (e.g., Windows and macOS) have not been tested.
